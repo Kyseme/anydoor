@@ -6,6 +6,8 @@ const Handlebars = require("handlebars");
 const path = require("path");
 const conf = require("../config/config");
 const mime = require("../helper/mime");
+const compress = require('./compress');
+const range = require('./range');
 
 //获取文件夹路径
 const tplPath = path.join(__dirname,"../template/dir.tpl");
@@ -22,7 +24,20 @@ module.exports = async function(req,res,filePath){
             let extname = mime(filePath);
             // res.setHeader('Content-Type','text/plian');
             res.setHeader('Content-Type',extname.type);
-            fs.createReadStream(filePath).pipe(res);
+            let rs;
+            let {code,start,end} = range(stats.size,req,res);
+            if(code == 200){
+                res.statusCode = 200;
+                rs = fs.createReadStream(filePath);
+            }else if(code == 206){
+                res.statusCode = 206;
+                //以从文件中读取一定范围的字节而不是读取整个文件
+                rs = fs.createReadStream(filePath,{start,end});
+            }
+            if(filePath.match(conf.compress)){
+                rs = compress(rs,req,res);
+            }
+            rs.pipe(res);
         }else if(stats.isDirectory()){
             res.statusCode = 200;
             res.setHeader('Content-Type','text/html');
