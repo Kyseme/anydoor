@@ -4,10 +4,10 @@ const stat = promisify(fs.stat);
 const readdir = promisify(fs.readdir);
 const Handlebars = require("handlebars");
 const path = require("path");
-const conf = require("../config/config");
 const mime = require("../helper/mime");
 const compress = require('./compress');
 const range = require('./range');
+const isFresh = require('./cache');
 
 //获取文件夹路径
 const tplPath = path.join(__dirname,"../template/dir.tpl");
@@ -16,14 +16,20 @@ const source = fs.readFileSync(tplPath,'utf-8');
 //解析成模板
 const template = Handlebars.compile(source);
 
-module.exports = async function(req,res,filePath){
+module.exports = async function(req,res,filePath,conf){
     try{
         const stats = await stat(filePath);
         if(stats.isFile()){
-            res.statusCode = 200;
             let extname = mime(filePath);
-            // res.setHeader('Content-Type','text/plian');
             res.setHeader('Content-Type',extname.type);
+            
+            //判断缓存是否过期
+            if(isFresh(stats,req,res)){
+                res.statusCode = 304;
+                res.end();
+                return;
+            }
+            // res.statusCode = 200;
             let rs;
             let {code,start,end} = range(stats.size,req,res);
             if(code == 200){
@@ -56,8 +62,11 @@ module.exports = async function(req,res,filePath){
             res.end(template(data));
         }
     }catch(ex){
+        // throw new Error(ex);
         res.statusCode = 404;
         res.setHeader('Content-Type','text/plian');
-        res.end("not find the file");
+        console.log(ex);
+        res.end('not find the file');
+        // res.end(ex.info);
     }
 };

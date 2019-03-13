@@ -1,5 +1,28 @@
-/* eslint-disable */
-console.log(123);
-/* eslint-enable */
+const yargs = require('yargs');
+const Server = require('./app');
 
-console.log(123);
+const argv = yargs
+    .usage('anywhere options')
+    .option('p',{
+        alias:'port',
+        describe:'端口号',
+        default:3000
+    })
+    .option('h',{
+        alias:'hostname',
+        describe:'主机号',
+        default:'127.0.0.1'
+    })
+    .option('d',{
+        alias:'root',
+        describe:'根目录',
+        default:process.cwd()
+    })
+    .version()
+    .alias('v','version')
+    .help()
+    .argv;
+
+const server  = new Server(argv);
+server.start();
+    
