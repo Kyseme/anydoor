@@ -2,14 +2,18 @@
   "name": "anydoor",
   "version": "1.0.0",
   "description": "this is a test item",
-  "main": "index.js",
-  "bin":{
-    "anydoor":"bin/anydoor"
+  "private": true,
+  "bin": {
+    "anydoor": "bin/anydoor"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
-    "fix": "eslint --fix ."
+    "fix": "eslint --fix .",
+    "gulp": "gulp",
+    "gulp-watch": "gulp watch",
+    "babel": "babel src/test -d lib",
+    "build": "webpack --config webpack.config.js"
   },
   "repository": {
     "type": "git",
@@ -23,15 +27,26 @@
   },
   "homepage": "https://github.com/Kyseme/anydoor#readme",
   "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
+    "@babel/preset-react": "^7.0.0",
     "eslint": "^5.15.1",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-node": "^8.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
-    "eslint-plugin-vue": "^5.2.2"
+    "eslint-plugin-vue": "^5.2.2",
+    "gulp": "^4.0.0",
+    "gulp-autoprefixer": "^6.0.0",
+    "webpack": "^4.29.6"
   },
   "dependencies": {
+    "@babel/polyfill": "^7.2.5",
+    "del": "^4.0.0",
+    "gulp-clean-css": "^4.0.0",
+    "gulp-less": "^4.0.1",
     "handlebars": "^4.1.0",
     "yargs": "^13.2.2"
   }

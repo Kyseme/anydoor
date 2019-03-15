@@ -1,0 +1,14 @@
+@base:'red';
+
+.wrap{
+    color:@base;
+    & .child{
+        color:'green';
+    }
+}
+
+.container{
+    transform: scale(1.2);
+    box-shadow: 0ch;
+    height: 30px;
+}
